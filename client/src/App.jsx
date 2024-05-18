@@ -1,15 +1,52 @@
-import { useState } from 'react'
+import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
-import './App.css'
+// import all componets
+import Username from "./components/Username";
+import Password from "./components/Password";
+import Register from "./components/Register";
+import Profile from "./components/Profile";
+import Recovery from "./components/Recovery";
+import Reset from "./components/Reset";
+import PageNotFound from "./components/PageNotFound";
+
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <Username></Username>
+  },
+  {
+    path: "/register",
+    element: <Register></Register>
+  },
+  {
+    path: "/password",
+    element: <Password></Password>
+  },
+  {
+    path: "/profile",
+    element: <Profile></Profile>
+  },
+  {
+    path: "/recovery",
+    element: <Recovery></Recovery>
+  },
+  {
+    path: "/reset",
+    element: <Reset></Reset>
+  },
+  {
+    path: "*",
+    element: <PageNotFound></PageNotFound>
+  },
+]);
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <h1>React APP</h1>
-    </>
-  )
+    <main>
+      <RouterProvider router={router}></RouterProvider>
+    </main>
+  );
 }
 
-export default App
+export default App;
