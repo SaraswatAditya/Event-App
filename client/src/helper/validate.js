@@ -1,8 +1,17 @@
 import toast from "react-hot-toast";
+import { authenticate } from "./helper";
 
 // validate login page username
 export async function usernameValidate(values) {
   const errors = usernameVerify({}, values);
+
+  if (values.username) {
+    //check user exist or not
+    const { status } = await authenticate(values.username);
+    if (status !== 200) {
+      errors.exist = toast.error("User does not exist...!");
+    }
+  }
   return errors;
 }
 
@@ -41,10 +50,13 @@ export async function profileValidation(values) {
 
 // validate username
 function usernameVerify(error = {}, values) {
+  const specialChars = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
   if (!values.username) {
     error.username = toast.error("Username Required...!");
   } else if (values.username.includes(" ")) {
     error.username = toast.error("Invalid Username...!");
+  } else if (specialChars.test(values.username)) {
+    error.username = toast.error("Username cannot have special characters!");
   }
   return error;
 }

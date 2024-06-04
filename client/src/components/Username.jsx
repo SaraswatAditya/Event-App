@@ -1,12 +1,19 @@
 import React from "react";
-import { Link } from "react-router-dom";
-import avatar from "../assets/profile.png";
-import styles from "../styles/Username.module.css";
+import { Link, useNavigate } from "react-router-dom";
+
 import { Toaster } from "react-hot-toast";
 import { useFormik } from "formik";
+import { useDispatch } from "react-redux";
 import { usernameValidate } from "../helper/validate";
+import { setActive, setUsername } from "../store/authSlice";
+
+import avatar from "../assets/profile.png";
+import styles from "../styles/Username.module.css";
 
 function Username() {
+  const navigate = useNavigate();
+  const dispatch = useDispatch(); // Get the dispatch function
+
   const formik = useFormik({
     initialValues: {
       username: "",
@@ -15,7 +22,10 @@ function Username() {
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
-      console.log(values);
+      // console.log(values);
+      dispatch(setUsername(values.username)); // Dispatch the setUsername action
+      dispatch(setActive(true)); // Set active to true on login
+      navigate("/password");
     },
   });
 
