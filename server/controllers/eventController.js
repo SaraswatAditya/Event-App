@@ -1,4 +1,3 @@
-// controllers/eventController.js
 import EventModel from "../model/Event.model.js";
 
 /** POST: http://localhost:8080/api/events/create 
@@ -6,20 +5,30 @@ import EventModel from "../model/Event.model.js";
   "name": "Event Name",
   "description": "Event Description",
   "date": "2024-05-01T18:30:00.000Z",
-  "location": "Event Location"
+  "endDate": "2024-05-01T20:30:00.000Z",
+  "location": "Event Location",
+  "image": "Image URL",
+  "category": "Event Category",
+  "tags": ["tag1", "tag2"],
+  "visibility": "public"
 }
  */
 export async function createEvent(req, res) {
   try {
-    const { name, description, date, location } = req.body;
+    const { name, description, date, endDate, location, image, category, tags, visibility } = req.body;
     const userId = req.user.userId;
 
     const event = new EventModel({
       name,
       description,
       date,
+      endDate,
       location,
       createdBy: userId,
+      image,
+      category,
+      tags,
+      visibility
     });
 
     const savedEvent = await event.save();
@@ -56,13 +65,18 @@ export async function getEventById(req, res) {
   "name": "Updated Event Name",
   "description": "Updated Event Description",
   "date": "2024-05-02T18:30:00.000Z",
-  "location": "Updated Event Location"
+  "endDate": "2024-05-02T20:30:00.000Z",
+  "location": "Updated Event Location",
+  "image": "Updated Image URL",
+  "category": "Updated Event Category",
+  "tags": ["updatedTag1", "updatedTag2"],
+  "visibility": "private"
 }
  */
 export async function updateEvent(req, res) {
   try {
     const { id } = req.params;
-    const { name, description, date, location } = req.body;
+    const { name, description, date, endDate, location, image, category, tags, visibility } = req.body;
     const userId = req.user.userId;
 
     const event = await EventModel.findById(id);
@@ -72,7 +86,12 @@ export async function updateEvent(req, res) {
     event.name = name;
     event.description = description;
     event.date = date;
+    event.endDate = endDate;
     event.location = location;
+    event.image = image;
+    event.category = category;
+    event.tags = tags;
+    event.visibility = visibility;
 
     const updatedEvent = await event.save();
     res.status(200).send({ msg: "Event updated successfully", event: updatedEvent });

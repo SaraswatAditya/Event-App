@@ -24,7 +24,6 @@ function Username() {
     onSubmit: async (values) => {
       // console.log(values);
       dispatch(setUsername(values.username)); // Dispatch the setUsername action
-      dispatch(setActive(true)); // Set active to true on login
       navigate("/password");
     },
   });

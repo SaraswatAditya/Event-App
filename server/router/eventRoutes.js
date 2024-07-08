@@ -7,8 +7,7 @@ const router = express.Router();
 
 router.post("/create", Auth, createEvent);
 router.get("/", Auth, getEvents);
-router.get("/:id", Auth, getEventById);
+router.get("/:id",  getEventById);
 router.put("/update/:id", Auth, updateEvent);
 router.delete("/delete/:id", Auth, deleteEvent);
-
 export default router;

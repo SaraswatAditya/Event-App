@@ -6,6 +6,7 @@ import toast, { Toaster } from "react-hot-toast";
 import { useFormik } from "formik";
 import { profileValidation } from "../helper/validate";
 import convertToBase64 from "../helper/convert";
+import { logout } from "../store/authSlice"; // Import the logout action
 
 import extend from "../styles/Profile.module.css";
 import { useDispatch, useSelector } from "react-redux";
@@ -52,6 +53,7 @@ function Profile() {
 
   function userLogout() {
     localStorage.removeItem("token");
+    dispatch(logout()); // Dispatch the logout action
     navigate("/");
   }
 
