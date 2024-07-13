@@ -60,7 +60,7 @@ const EditEvent = () => {
     }),
     onSubmit: async (values) => {
       try {
-        values = { ...values, image: file || "" };
+        values = { ...values, image: file || eventImage };
         const token = localStorage.getItem("token");
         await axios.put(`/api/events/update/${id}`, values, {
           headers: {
