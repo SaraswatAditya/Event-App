@@ -2,7 +2,8 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-axios.defaults.baseURL = import.meta.env.VITE_SERVER_DOMAIN || 'http://localhost:8080';
+axios.defaults.baseURL = import.meta.env.VITE_SERVER_DOMAIN ;
+// console.log("URL is ",import.meta.env.VITE_SERVER_DOMAIN)
 
 export const fetchUserData = createAsyncThunk(
   'api/fetchUserData',

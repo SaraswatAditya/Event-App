@@ -45,7 +45,7 @@ function Password() {
         localStorage.setItem("token", token);
         dispatch(setUsername(username));
         dispatch(setActive(true));
-        navigate("/profile");
+        navigate("/home");
       });
     },
   });

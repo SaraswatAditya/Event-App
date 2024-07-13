@@ -1,8 +1,8 @@
 import nodemailer from "nodemailer";
 import Mailgen from "mailgen";
-
-import ENV from "../config.js";
-
+import dotenv from "dotenv";
+// import ENV from "../config.js";
+dotenv.config();
 //https://ethereal.email/create
 /**
   let nodeConfig = {
@@ -17,12 +17,12 @@ import ENV from "../config.js";
 
 //gmail
 let nodeConfig = {
-  service : "gmail",
-  secure : "true",
-  port : 465,
+  service: "gmail",
+  secure: "true",
+  port: 465,
   auth: {
-    user: ENV.EMAIL, 
-    pass: ENV.PASSWORD, 
+    user: process.env.EMAIL,
+    pass: process.env.PASSWORD,
   },
 };
 
@@ -51,16 +51,16 @@ export const registerMail = async (req, res) => {
   var email = {
     body: {
       name: username,
-      intro: text || "Welcome to the world of Lights",
+      intro: text || "Welcome to the Event-App",
       outro:
-        "Need help , or any Question just reply to the mail and we will be there to assist you!",
+        "Congratulations !! You have Successful registered Try Creating some events with us.",
     },
   };
 
   var emailBody = MailGenerator.generate(email);
 
   let message = {
-    from: ENV.EMAIL,
+    from: process.env.EMAIL,
     to: userEmail,
     subject: subject || "Signup Successful",
     html: emailBody,

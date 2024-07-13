@@ -19,6 +19,10 @@ import { setActive, setUsername } from "./store/authSlice";
 import EditEvent from "./components/EditEvent";
 import EventDetail from "./components/EventDetail";
 import CreateEvent from "./components/CreateEvent";
+import HomePage from "./components/HomePage";
+import Contact from "./components/Contact";
+import AboutUs from "./components/AboutUs";
+import Services from "./components/Services";
 // import router from "./router";
 
 // const router = createBrowserRouter([
@@ -93,6 +97,12 @@ function App() {
         <Route exact path="/events/update/:id" element={<EditEvent />} />
         <Route exact path="/events/:id" element={<EventDetail />} />
         <Route exact path="/events/create" element={<CreateEvent />} />
+        
+        <Route exact path="/home" element={<HomePage />} />
+        <Route exact path="/contact" element={<Contact />} />
+        <Route exact path="/services" element={<Services />} />
+        <Route exact path="/aboutus" element={<AboutUs />} />
+        
       </Routes>
     </Router>
   );

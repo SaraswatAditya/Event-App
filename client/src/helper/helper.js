@@ -1,11 +1,11 @@
 import axios from "axios";
 
 // Log the environment variable to check its value
-// console.log('Server Domain:', process.env.VITE_SERVER_DOMAIN);
+// console.log('Server Domain:', import.meta.env.VITE_SERVER_DOMAIN);
 //server domain
 
-// axios.defaults.baseURL = process.env.VITE_SERVER_DOMAIN;
-axios.defaults.baseURL = 'http://localhost:8080';
+axios.defaults.baseURL = import.meta.env.VITE_SERVER_DOMAIN;
+// axios.defaults.baseURL = 'http://localhost:8080';
 
 /**
  * ! Make API Request

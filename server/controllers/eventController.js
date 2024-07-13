@@ -48,6 +48,19 @@ export async function getEvents(req, res) {
   }
 }
 
+/** GET: http://localhost:8080/api/events/user/:userId */
+export async function getUserEvents(req, res) {
+  const { userId } = req.params;
+  
+  try {
+    const events = await EventModel.find({ createdBy: userId }).populate("createdBy", "username email");
+    res.status(200).send(events);
+  } catch (error) {
+    res.status(500).send({ error: `Failed to fetch events: ${error.message}` });
+  }
+}
+
+
 /** GET: http://localhost:8080/api/events/:id */
 export async function getEventById(req, res) {
   try {

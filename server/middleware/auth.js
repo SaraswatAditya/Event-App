@@ -1,7 +1,9 @@
 //this is for allowing a valid user to update info
 import jwt from "jsonwebtoken";
-import ENV from "../config.js";
+// import ENV from "../config.js";
+import dotenv from "dotenv";
 
+dotenv.config();
 // auth middleware
 export default async function Auth(req, res, next) {
   try {
@@ -14,7 +16,7 @@ export default async function Auth(req, res, next) {
      */
     // retrieve the user details for logged in users
 
-    const decodedToken = await jwt.verify(token, ENV.JWT_SECRET);
+    const decodedToken = await jwt.verify(token, process.env.JWT_SECRET);
 
     req.user = decodedToken;
 

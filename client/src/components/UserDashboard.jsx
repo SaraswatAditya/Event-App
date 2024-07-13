@@ -15,13 +15,13 @@ const UserDashboard = () => {
     const fetchEvents = async () => {
       try {
         const token = localStorage.getItem('token');
-        const response = await axios.get('/api/events', {
+        const response = await axios.get(`/api/events/user/${apiData?._id}`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         });
         setEvents(response.data);
-        console.log('Events are ', response.data);
+        // console.log('Events are ', response.data);
       } catch (error) {
         console.error('Error fetching events:', error);
       }
@@ -31,7 +31,7 @@ const UserDashboard = () => {
   }, []);
 
   const handleDelete = async (eventId) => {
-    if (window.confirm('Are you sure you want to delete this event?')) {
+    if (window.confirm(`Are you sure you want to delete this event?`)) {
       try {
         const token = localStorage.getItem('token');
         await axios.delete(`/api/events/delete/${eventId}`, {
@@ -87,7 +87,7 @@ const UserDashboard = () => {
         <h1 className="text-2xl font-bold mb-4">My Events</h1>
         <Link
           to="/events/create"
-          className="bg-blue-500 text-white py-3 px-4 rounded-md shadow-lg hover:bg-blue-700"
+          className="bg-blue-500 text-white py-3 px-4 rounded-md shadow-lg hover:bg-blue-700 transition-all duration-500"
         >
           Create Event
         </Link>
@@ -107,15 +107,15 @@ const UserDashboard = () => {
             {events.map((event) => {
               const { month, day } = formatDate(event.date);
               return (
-                <tr key={event._id} className="border-b hover:shadow-md">
+                <tr key={event._id} className="border-b hover:shadow-md transition-all duration-500">
                   <td className="py-3 px-4 ">
                     <div className="flex items-center">
                       <div className="mr-10 text-center">
                         <div className="text-lg font-bold text-rose-600">{month}</div>
                         <div className="text-2xl font-bold">{day}</div>
                       </div>
-                      <div className="mr-10 hover:shadow-xl">
-                        <img src={event.imageUrl} alt={event.name} className="w-20 h-20 object-cover" />
+                      <div className="mr-10 hover:shadow-xl ">
+                        <img src={event.image} alt={event.name} className="w-20 h-20 object-cover" />
                       </div>
                       <div>
                         <h2 className="text-xl font-semibold">{event.name}</h2>
@@ -155,6 +155,7 @@ const UserDashboard = () => {
           </tbody>
         </table>
       )}
+      <hr className="w-8 h-8 mx-auto my-8 bg-gray-200 border-0 rounded md:my-12 dark:bg-neutral-950"></hr>
     </div>
   );
 };
