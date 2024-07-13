@@ -9,8 +9,8 @@ import { FaUpload } from "react-icons/fa";
 const EditEvent = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [file, setFile] = useState();
-  const [eventImage, setEventImage] = useState();
+  const [file, setFile] = useState(null); // Initialize with null
+  const [eventImage, setEventImage] = useState("");
 
   const [initialValues, setInitialValues] = useState({
     name: "",
@@ -34,8 +34,12 @@ const EditEvent = () => {
           },
         });
         const event = response.data;
-        event.date = event.date ? new Date(event.date).toISOString().slice(0, 16) : "";
-        event.endDate = event.endDate ? new Date(event.endDate).toISOString().slice(0, 16) : "";
+        event.date = event.date
+          ? new Date(event.date).toISOString().slice(0, 16)
+          : "";
+        event.endDate = event.endDate
+          ? new Date(event.endDate).toISOString().slice(0, 16)
+          : "";
         setInitialValues(event);
         setEventImage(event.image);
         console.log("event:", event);
@@ -60,7 +64,11 @@ const EditEvent = () => {
     }),
     onSubmit: async (values) => {
       try {
-        values = { ...values, image: file || eventImage };
+        if (file) {
+          values = { ...values, image: file };
+        } else {
+          values.image = initialValues.image; // Keep the existing image if no new file is uploaded
+        }
         const token = localStorage.getItem("token");
         await axios.put(`/api/events/update/${id}`, values, {
           headers: {
@@ -76,6 +84,7 @@ const EditEvent = () => {
 
   const onUpload = async (e) => {
     const base64 = await convertToBase64(e.target.files[0]);
+    console.log("base64", base64);
     setFile(base64);
   };
 
@@ -139,38 +148,40 @@ const EditEvent = () => {
           ) : null}
         </div>
         <div className="grid grid-cols-2 gap-4">
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            Start Date
-          </label>
-          <input
-            type="datetime-local"
-            name="date"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.date}
-            className="mt-1 block w-full h-8 rounded-md border-gray-300 shadow-sm"
-          />
-          {formik.touched.date && formik.errors.date ? (
-            <div className="text-red-500 text-sm">{formik.errors.date}</div>
-          ) : null}
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700">
-            End Date
-          </label>
-          <input
-            type="datetime-local"
-            name="endDate"
-            onChange={formik.handleChange}
-            onBlur={formik.handleBlur}
-            value={formik.values.endDate}
-            className="mt-1 block w-full h-8 rounded-md border-gray-300 shadow-sm"
-          />
-          {formik.touched.endDate && formik.errors.endDate ? (
-            <div className="text-red-500 text-sm">{formik.errors.endDate}</div>
-          ) : null}
-        </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              Start Date
+            </label>
+            <input
+              type="datetime-local"
+              name="date"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.date}
+              className="mt-1 block w-full h-8 rounded-md border-gray-300 shadow-sm"
+            />
+            {formik.touched.date && formik.errors.date ? (
+              <div className="text-red-500 text-sm">{formik.errors.date}</div>
+            ) : null}
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700">
+              End Date
+            </label>
+            <input
+              type="datetime-local"
+              name="endDate"
+              onChange={formik.handleChange}
+              onBlur={formik.handleBlur}
+              value={formik.values.endDate}
+              className="mt-1 block w-full h-8 rounded-md border-gray-300 shadow-sm"
+            />
+            {formik.touched.endDate && formik.errors.endDate ? (
+              <div className="text-red-500 text-sm">
+                {formik.errors.endDate}
+              </div>
+            ) : null}
+          </div>
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700">
