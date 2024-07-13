@@ -1,20 +1,16 @@
 import mongoose from "mongoose";
-import { MongoMemoryServer } from "mongodb-memory-server";
-// import ENV from '../config.js'
 import dotenv from "dotenv";
 
 dotenv.config();
 
-async function connect() {
-  const mongod = await MongoMemoryServer.create();
-  const getUri = mongod.getUri();
-
-  mongoose.set("strictQuery", true);
-  // const db = await mongoose.connect(getUri);
-  const db = await mongoose.connect(process.env.ATLAS_URI);
-  
-  console.log("Database Connected");
-  return db;
-}
+const connect = async () => {
+  try {
+    await mongoose.connect(process.env.ATLAS_URI);
+    console.log("MongoDB connected successfully");
+  } catch (error) {
+    console.error("Error connecting to MongoDB:", error);
+    process.exit(1);
+  }
+};
 
 export default connect;
