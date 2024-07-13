@@ -13,7 +13,12 @@ const app = express();
 /* middleware */
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
-app.use(cors());
+app.use(cors({
+  origin: ['http://localhost:5173', 'https://event-backend-one.vercel.app'], // Add your frontend URL here
+  methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+  credentials: true,
+  allowedHeaders: 'Content-Type,Authorization'
+}));
 app.use(morgan("tiny"));
 app.disable("x-powered-by"); // less hackers know about our stack
 
