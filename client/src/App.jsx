@@ -99,6 +99,7 @@ function App() {
         <Route exact path="/events/create" element={<CreateEvent />} />
         
         <Route exact path="/home" element={<HomePage />} />
+        <Route exact path="/" element={<HomePage />} />
         <Route exact path="/contact" element={<Contact />} />
         <Route exact path="/services" element={<Services />} />
         <Route exact path="/aboutus" element={<AboutUs />} />

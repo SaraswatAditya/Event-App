@@ -14,7 +14,7 @@ const app = express();
 app.use(bodyParser.json({ limit: "50mb" }));
 app.use(bodyParser.urlencoded({ limit: "50mb", extended: true }));
 app.use(cors({
-  origin: ['http://localhost:5173', 'https://event-backend-one.vercel.app'], // Add your frontend URL here
+  origin: ['https://event-app-sand-eta.vercel.app', 'https://event-backend-one.vercel.app'], // Add your frontend URL here
   methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
   credentials: true,
   allowedHeaders: 'Content-Type,Authorization'
