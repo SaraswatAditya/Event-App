@@ -15,17 +15,7 @@ import EventModel from "../model/Event.model.js";
  */
 export async function createEvent(req, res) {
   try {
-    const {
-      name,
-      description,
-      date,
-      endDate,
-      location,
-      image,
-      category,
-      tags,
-      visibility,
-    } = req.body;
+    const { name, description, date, endDate, location, image, category, tags, visibility } = req.body;
     const userId = req.user.userId;
 
     const event = new EventModel({
@@ -38,13 +28,11 @@ export async function createEvent(req, res) {
       image,
       category,
       tags,
-      visibility,
+      visibility
     });
 
     const savedEvent = await event.save();
-    res
-      .status(201)
-      .send({ msg: "Event created successfully", event: savedEvent });
+    res.status(201).send({ msg: "Event created successfully", event: savedEvent });
   } catch (error) {
     res.status(500).send({ error: `Event creation failed: ${error.message}` });
   }
@@ -53,10 +41,7 @@ export async function createEvent(req, res) {
 /** GET: http://localhost:8080/api/events/ */
 export async function getEvents(req, res) {
   try {
-    const events = await EventModel.find().populate(
-      "createdBy",
-      "username email"
-    );
+    const events = await EventModel.find().populate("createdBy", "username email");
     res.status(200).send(events);
   } catch (error) {
     res.status(500).send({ error: `Failed to fetch events: ${error.message}` });
@@ -66,35 +51,21 @@ export async function getEvents(req, res) {
 /** GET: http://localhost:8080/api/events/user/:userId */
 export async function getUserEvents(req, res) {
   const { userId } = req.params;
-  const { page = 1, limit = 10 } = req.query;
-
+  
   try {
-    const events = await EventModel.find({ createdBy: userId })
-      .populate("createdBy", "username email")
-      .limit(limit * 1)
-      .skip((page - 1) * limit)
-      .exec();
-
-    const count = await EventModel.countDocuments({ createdBy: userId });
-
-    res.status(200).json({
-      events,
-      totalPages: Math.ceil(count / limit),
-      currentPage: page,
-    });
+    const events = await EventModel.find({ createdBy: userId }).populate("createdBy", "username email");
+    res.status(200).send(events);
   } catch (error) {
     res.status(500).send({ error: `Failed to fetch events: ${error.message}` });
   }
 }
 
+
 /** GET: http://localhost:8080/api/events/:id */
 export async function getEventById(req, res) {
   try {
     const { id } = req.params;
-    const event = await EventModel.findById(id).populate(
-      "createdBy",
-      "username email"
-    );
+    const event = await EventModel.findById(id).populate("createdBy", "username email");
     if (!event) return res.status(404).send({ error: "Event not found" });
     res.status(200).send(event);
   } catch (error) {
@@ -118,23 +89,12 @@ export async function getEventById(req, res) {
 export async function updateEvent(req, res) {
   try {
     const { id } = req.params;
-    const {
-      name,
-      description,
-      date,
-      endDate,
-      location,
-      image,
-      category,
-      tags,
-      visibility,
-    } = req.body;
+    const { name, description, date, endDate, location, image, category, tags, visibility } = req.body;
     const userId = req.user.userId;
 
     const event = await EventModel.findById(id);
     if (!event) return res.status(404).send({ error: "Event not found" });
-    if (event.createdBy.toString() !== userId)
-      return res.status(403).send({ error: "Unauthorized" });
+    if (event.createdBy.toString() !== userId) return res.status(403).send({ error: "Unauthorized" });
 
     event.name = name;
     event.description = description;
@@ -147,9 +107,7 @@ export async function updateEvent(req, res) {
     event.visibility = visibility;
 
     const updatedEvent = await event.save();
-    res
-      .status(200)
-      .send({ msg: "Event updated successfully", event: updatedEvent });
+    res.status(200).send({ msg: "Event updated successfully", event: updatedEvent });
   } catch (error) {
     res.status(500).send({ error: `Event update failed: ${error.message}` });
   }
@@ -163,8 +121,7 @@ export async function deleteEvent(req, res) {
 
     const event = await EventModel.findById(id);
     if (!event) return res.status(404).send({ error: "Event not found" });
-    if (event.createdBy.toString() !== userId)
-      return res.status(403).send({ error: "Unauthorized" });
+    if (event.createdBy.toString() !== userId) return res.status(403).send({ error: "Unauthorized" });
 
     await EventModel.findByIdAndDelete(id);
     res.status(200).send({ msg: "Event deleted successfully" });
