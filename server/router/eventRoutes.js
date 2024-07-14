@@ -18,4 +18,5 @@ router.get("/user/:userId", Auth, getUserEvents);
 router.get("/:id", getEventById);
 router.put("/update/:id", Auth, updateEvent);
 router.delete("/delete/:id", Auth, deleteEvent);
+
 export default router;
