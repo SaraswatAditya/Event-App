@@ -6,9 +6,10 @@ const router = Router();
 import * as controller from "../controllers/appController.js";
 import { registerMail } from "../controllers/mailer.js";
 import Auth, { localVariables } from "../middleware/auth.js";
+import upload from "../middleware/upload.js";
 
 // POST Methods
-router.route("/register").post(controller.register);
+router.route("/register").post(upload, controller.register);
 router.route("/registerMail").post(registerMail); // send the mail
 router
   .route("/authenticate")
@@ -24,7 +25,7 @@ router.route("/verifyOTP").get(controller.verifyUser, controller.verifyOTP); // 
 router.route("/createResetSession").get(controller.createResetSession); //reset all the variables
 
 // PUT Methods
-router.route("/updateuser").put(Auth, controller.updateUser); // is use to update the user profile
+router.route("/updateuser").put(Auth, upload, controller.updateUser); // is use to update the user profile
 router
   .route("/resetPassword")
   .put(controller.verifyUser, controller.resetPassword); // use to reset password

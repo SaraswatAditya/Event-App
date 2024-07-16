@@ -1,22 +1,25 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import avatar from "../assets/profile.png";
 import styles from "../styles/Username.module.css";
 import toast, { Toaster } from "react-hot-toast";
 import { useFormik } from "formik";
 import { profileValidation } from "../helper/validate";
-import convertToBase64 from "../helper/convert";
-import { logout } from "../store/authSlice"; // Import the logout action
-
+import { logout } from "../store/authSlice";
 import extend from "../styles/Profile.module.css";
 import { useDispatch, useSelector } from "react-redux";
-import { updateUser } from "../helper/helper";
+import { fetchUserData } from "../features/api/apiSlice";
+import axios from "axios";
 
 function Profile() {
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { isLoading, apiData, serverError } = useSelector((state) => state.api);
-  const [file, setFile] = useState();
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null);
+  const [reload, setReload] = useState(false);
+  const username = useSelector((state) => state.auth.auth.username);
+  // console.log(`${import.meta.env.VITE_SERVER_DOMAIN}${apiData?.image}`);
 
   const formik = useFormik({
     initialValues: {
@@ -31,31 +34,53 @@ function Profile() {
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
-      values = await Object.assign(values, {
-        profile: file || apiData?.profile || "",
+      const formData = new FormData();
+      Object.keys(values).forEach((key) => {
+        formData.append(key, values[key]);
       });
-      // console.log(values);
-      let updatePromise = updateUser(values);
-
-      toast.promise(updatePromise, {
-        loading: "Updating...",
-        success: <b>Update Successfully</b>,
-        error: <b>Could Not Update!</b>,
-      });
+      if (file) {
+        formData.append("image", file);
+      }
+      // console.log("Username is ", username);
+      const token = localStorage.getItem("token");
+      try {
+        await axios.put("/api/updateuser", formData, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        setReload(true);
+        toast.success("Update Successfully");
+      } catch (error) {
+        toast.error("Could Not Update!");
+      }
     },
   });
 
-  // formik doesn't support file upload so we need to create handler
-  const onUpload = async (e) => {
-    const base64 = await convertToBase64(e.target.files[0]);
-    setFile(base64);
+  useEffect(() => {
+    if (reload) {
+      dispatch(fetchUserData(username));
+    }
+  }, [reload]);
+
+  const onUpload = (e) => {
+    const uploadedFile = e.target.files[0];
+    setFile(uploadedFile);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreview(reader.result);
+    };
+    if (uploadedFile) {
+      reader.readAsDataURL(uploadedFile);
+    }
   };
 
-  function userLogout() {
+  const userLogout = () => {
     localStorage.removeItem("token");
-    dispatch(logout()); // Dispatch the logout action
+    dispatch(logout());
     navigate("/");
-  }
+  };
 
   if (isLoading) return <h1 className="text-2xl font-bold">isLoading</h1>;
   if (serverError)
@@ -80,7 +105,12 @@ function Profile() {
             <div className="profile flex justify-center py-4">
               <label htmlFor="profile">
                 <img
-                  src={apiData?.profile || file || avatar}
+                  src={
+                    preview ||
+                    file ||
+                    `${import.meta.env.VITE_SERVER_DOMAIN}${apiData?.image}` ||
+                    avatar
+                  }
                   className={`${styles.profile_img} ${extend.profile_img}`}
                   alt="avatar"
                 />

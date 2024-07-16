@@ -3,13 +3,13 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import convertToBase64 from "../helper/convert";
 import eventImage from "../assets/Images/12.jpg";
 import { FaUpload } from "react-icons/fa";
 
 const CreateEvent = () => {
   const navigate = useNavigate();
-  const [file, setFile] = useState();
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null);
 
   const formik = useFormik({
     initialValues: {
@@ -18,7 +18,6 @@ const CreateEvent = () => {
       date: "",
       endDate: "",
       location: "",
-      image: "",
       category: "",
       tags: "",
       visibility: "public",
@@ -33,26 +32,45 @@ const CreateEvent = () => {
     }),
     onSubmit: async (values) => {
       try {
-        values = await Object.assign(values, {
-          image: file || "",
-        });
-        console.log(values);
+        const formData = new FormData();
+        formData.append("name", values.name);
+        formData.append("description", values.description);
+        formData.append("date", values.date);
+        formData.append("endDate", values.endDate);
+        formData.append("location", values.location);
+        formData.append("category", values.category);
+        formData.append("tags", values.tags);
+        formData.append("visibility", values.visibility);
+        if (file) {
+          formData.append("image", file);
+        }
+
         const token = localStorage.getItem("token");
-        const response = await axios.post("/api/events/create", values, {
+        const response = await axios.post("/api/events/create", formData, {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
           },
         });
-        navigate(`/events/${response.data.event._id}`);
+        navigate(`/events/${response.data._id}`);
       } catch (error) {
         console.error("Error creating event:", error);
       }
     },
   });
 
-  const onUpload = async (e) => {
-    const base64 = await convertToBase64(e.target.files[0]);
-    setFile(base64);
+  const onUpload = (e) => {
+    const uploadedFile = e.target.files[0];
+    setFile(uploadedFile);
+
+    // Create a preview for the selected file
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreview(reader.result);
+    };
+    if (uploadedFile) {
+      reader.readAsDataURL(uploadedFile);
+    }
   };
 
   return (
@@ -65,7 +83,7 @@ const CreateEvent = () => {
             className="block text-sm font-medium text-gray-700"
           >
             <img
-              src={file || eventImage}
+              src={preview || eventImage}
               className="h-40 w-full object-cover rounded-md"
               alt="Event"
             />

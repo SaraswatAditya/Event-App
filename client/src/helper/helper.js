@@ -5,7 +5,6 @@ import axios from "axios";
 //server domain
 
 axios.defaults.baseURL = import.meta.env.VITE_SERVER_DOMAIN;
-// axios.defaults.baseURL = 'http://localhost:8080';
 
 /**
  * ! Make API Request
@@ -31,27 +30,27 @@ export async function getUser({ username }) {
 }
 
 //register user function
-export async function registerUser(credentials) {
-  try {
-    const {
-      data: { msg },
-      status,
-    } = await axios.post(`/api/register`, credentials);
-    let { username, email } = credentials;
+// export async function registerUser(credentials) {
+//   try {
+//     const {
+//       data: { msg },
+//       status,
+//     } = await axios.post(`/api/register`, credentials);
+//     let { username, email } = credentials;
 
-    //send mail
-    if (status === 201) {
-      await axios.post("/api/registerMail", {
-        username,
-        userEmail: email,
-        text: msg,
-      });
-    }
-    return Promise.resolve(msg);
-  } catch (error) {
-    return Promise.reject({ error });
-  }
-}
+//     //send mail
+//     if (status === 201) {
+//       await axios.post("/api/registerMail", {
+//         username,
+//         userEmail: email,
+//         text: msg,
+//       });
+//     }
+//     return Promise.resolve(msg);
+//   } catch (error) {
+//     return Promise.reject({ error });
+//   }
+// }
 
 // login function
 export async function verifyPassword({ username, password }) {
@@ -61,22 +60,25 @@ export async function verifyPassword({ username, password }) {
       return Promise.resolve({ data });
     }
   } catch (error) {
-    return Promise.reject({ error: "Password doesn't MAtch...!" });
+    return Promise.reject({ error: "Password doesn't Match...!" });
   }
 }
 
 //update user function
-export async function updateUser(response) {
-  try {
-    const token = await localStorage.getItem("token");
-    const data = await axios.put("/api/updateuser", response, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-    return Promise.resolve({ data });
-  } catch (error) {
-    return Promise.reject({ error: "Could't Update Profile...!" });
-  }
-}
+// export async function updateUser(response) {
+//   try {
+//     const token = await localStorage.getItem("token");
+//     const data = await axios.put("/api/updateuser", response, {
+//       headers: {
+//         Authorization: `Bearer ${token}`,
+//         "Content-Type": "multipart/form-data",
+//       },
+//     });
+//     return Promise.resolve({ data });
+//   } catch (error) {
+//     return Promise.reject({ error: "Could't Update Profile...!" });
+//   }
+// }
 
 //generate OTP
 export async function generateOTP(username) {

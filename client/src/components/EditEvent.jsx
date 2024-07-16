@@ -3,14 +3,14 @@ import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { useFormik } from "formik";
 import * as Yup from "yup";
-import convertToBase64 from "../helper/convert";
 import { FaUpload } from "react-icons/fa";
 
 const EditEvent = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [file, setFile] = useState(null); // Initialize with null
   const [eventImage, setEventImage] = useState("");
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null);
 
   const [initialValues, setInitialValues] = useState({
     name: "",
@@ -42,7 +42,6 @@ const EditEvent = () => {
           : "";
         setInitialValues(event);
         setEventImage(event.image);
-        console.log("event:", event);
       } catch (error) {
         console.error("Error fetching event:", error);
       }
@@ -64,15 +63,18 @@ const EditEvent = () => {
     }),
     onSubmit: async (values) => {
       try {
+        const formData = new FormData();
+        Object.keys(values).forEach((key) => {
+          formData.append(key, values[key]);
+        });
         if (file) {
-          values = { ...values, image: file };
-        } else {
-          values.image = initialValues.image; // Keep the existing image if no new file is uploaded
+          formData.append("image", file);
         }
         const token = localStorage.getItem("token");
-        await axios.put(`/api/events/update/${id}`, values, {
+        await axios.put(`/api/events/update/${id}`, formData, {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "multipart/form-data",
           },
         });
         navigate(`/events`);
@@ -82,10 +84,18 @@ const EditEvent = () => {
     },
   });
 
-  const onUpload = async (e) => {
-    const base64 = await convertToBase64(e.target.files[0]);
-    console.log("base64", base64);
-    setFile(base64);
+  const onUpload = (e) => {
+    const uploadedFile = e.target.files[0];
+    setFile(uploadedFile);
+
+    // Create a preview for the selected file
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreview(reader.result);
+    };
+    if (uploadedFile) {
+      reader.readAsDataURL(uploadedFile);
+    }
   };
 
   return (
@@ -98,7 +108,9 @@ const EditEvent = () => {
             className="block text-sm font-medium text-gray-700"
           >
             <img
-              src={file || eventImage}
+              src={
+                preview || `${import.meta.env.VITE_SERVER_DOMAIN}${eventImage}`
+              }
               className="h-40 w-full object-cover rounded-md"
               alt="Event"
             />

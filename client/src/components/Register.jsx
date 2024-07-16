@@ -4,14 +4,13 @@ import avatar from "../assets/profile.png";
 import styles from "../styles/Username.module.css";
 import toast, { Toaster } from "react-hot-toast";
 import { useFormik } from "formik";
-import { passwordValidate } from "../helper/validate";
-import convertToBase64 from "../helper/convert";
 import { registerValidation } from "../helper/validate";
-import { registerUser } from "../helper/helper";
+import axios from "axios";
 
 function Register() {
   const navigate = useNavigate();
-  const [file, setFile] = useState();
+  const [file, setFile] = useState(null);
+  const [preview, setPreview] = useState(null);
 
   const formik = useFormik({
     initialValues: {
@@ -23,24 +22,58 @@ function Register() {
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
-      values = await Object.assign(values, { profile: file || "" });
-      // console.log(values);
-      let registerPromise = registerUser(values);
-      toast.promise(registerPromise, {
-        loading: "Creating...",
-        success: <b>Register Successfully...!</b>,
-        error: <b>Could not Register.</b>,
+      const formData = new FormData();
+      Object.keys(values).forEach((key) => {
+        formData.append(key, values[key]);
       });
-      registerPromise.then(function () {
+      if (file) {
+        formData.append("image", file);
+      }
+
+      try {
+        const {
+          data: { msg },
+          status,
+        } = await axios.post(`/api/register`, formData, {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        });
+        toast.success("Register Successfully...!");
+        if (status === 201) {
+          try {
+            await axios.post("/api/registerMail", {
+              username: values.username,
+              userEmail: values.email,
+              text: msg,
+            });
+          } catch (error) {
+            console.error("Error sending mail:", error);
+          }
+        }
         navigate("/login");
-      });
+      } catch (error) {
+        toast.error("Could not Register.");
+        toast.error("Email or Username Already Exists");
+        console.error(
+          "Registration Error:",
+          error.response?.data || error.message
+        );
+      }
     },
   });
 
   // formik doesn't support file upload so we need to create handler
-  const onUpload = async (e) => {
-    const base64 = await convertToBase64(e.target.files[0]);
-    setFile(base64);
+  const onUpload = (e) => {
+    const uploadedFile = e.target.files[0];
+    setFile(uploadedFile);
+    const reader = new FileReader();
+    reader.onloadend = () => {
+      setPreview(reader.result);
+    };
+    if (uploadedFile) {
+      reader.readAsDataURL(uploadedFile);
+    }
   };
 
   return (
@@ -59,7 +92,7 @@ function Register() {
             <div className="profile flex justify-center py-4">
               <label htmlFor="profile">
                 <img
-                  src={file || avatar}
+                  src={preview || avatar}
                   className={styles.profile_img}
                   alt="avatar"
                 />
@@ -77,19 +110,19 @@ function Register() {
                 {...formik.getFieldProps("email")}
                 type="text"
                 className={styles.textbox}
-                placeholder=" Email*"
+                placeholder="Email*"
               />
               <input
                 {...formik.getFieldProps("username")}
                 type="text"
                 className={styles.textbox}
-                placeholder=" Username*"
+                placeholder="Username*"
               />
               <input
                 {...formik.getFieldProps("password")}
-                type="text"
+                type="password"
                 className={styles.textbox}
-                placeholder=" Password*"
+                placeholder="Password*"
               />
               <button className={styles.btn} type="submit">
                 Register
@@ -98,7 +131,7 @@ function Register() {
 
             <div className="text-center py-4">
               <span className="text-gray-500">
-                Already Register?
+                Already Registered?
                 <Link className="text-red-500" to="/login">
                   Login Now
                 </Link>

@@ -22,7 +22,7 @@ function Username() {
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
-      // console.log(values);
+      console.log(values);
       dispatch(setUsername(values.username)); // Dispatch the setUsername action
       navigate("/password");
     },

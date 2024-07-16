@@ -31,12 +31,13 @@ export async function verifyUser(req, res, next) {
   "lastName": "william",
   "mobile": 8009860560,
   "address" : "Apt. 556, Kulas Light, Gwenborough",
-  "profile": ""
+  "image": ""
 }
 */
+
 export async function register(req, res) {
   try {
-    const { username, password, profile, email } = req.body;
+    const { username, password, email } = req.body;
 
     // Check if username already exists
     const existingUsername = await UserModel.findOne({ username });
@@ -60,10 +61,13 @@ export async function register(req, res) {
 
     const hashedPassword = await bcrypt.hash(password, 10);
 
+    // If a file was uploaded, add its path to the user object
+    const image = req.file ? `/uploads/${req.file.filename}` : "";
+
     const user = new UserModel({
       username,
       password: hashedPassword,
-      profile: profile || "",
+      image,
       email,
     });
 
@@ -151,19 +155,32 @@ export async function getUser(req, res) {
 body: {
     firstName: '',
     address : '',
-    profile : ''
+    image : ''
 }
 */
+// Function to update user details
 export async function updateUser(req, res) {
   try {
-    // const id = req.query.id;
-    const { userId } = req.user;
+    const { userId } = req.user; // Retrieve userId from authenticated user
 
     if (userId) {
       const body = req.body;
 
-      // update the data
+      // If a file was uploaded, add its path to the body
+      if (req.file) {
+        body.image = `/uploads/${req.file.filename}`;
+      }
+
+      // Update the user data in the database
       const result = await UserModel.updateOne({ _id: userId }, body);
+
+      // Check if the update was successful
+      if (result.nModified === 0) {
+        return res
+          .status(200)
+          .send({ msg: "No changes detected, record remains the same" });
+      }
+
       return res.status(201).send({ msg: "Record Updated...!" });
     } else {
       return res.status(401).send({ error: "User ID not provided" });
@@ -171,7 +188,7 @@ export async function updateUser(req, res) {
   } catch (error) {
     console.error("Error updating user:", error);
     return res
-      .status(401)
+      .status(500)
       .send({ error: "An error occurred while updating the record" });
   }
 }

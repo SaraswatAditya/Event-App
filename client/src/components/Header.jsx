@@ -69,7 +69,7 @@ function Header() {
               >
                 <img
                   className="w-11 h-11 rounded-full"
-                  src={apiData?.profile}
+                  src={`${import.meta.env.VITE_SERVER_DOMAIN}${apiData?.image}`}
                   alt={apiData?.username}
                 />
               </Link>

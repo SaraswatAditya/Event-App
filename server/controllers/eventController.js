@@ -15,8 +15,10 @@ import EventModel from "../model/Event.model.js";
  */
 export async function createEvent(req, res) {
   try {
-    const { name, description, date, endDate, location, image, category, tags, visibility } = req.body;
+    const { name, description, date, endDate, location, category, tags, visibility } = req.body;
     const userId = req.user.userId;
+
+    const image = req.file ? `/uploads/${req.file.filename}` : '';
 
     const event = new EventModel({
       name,
@@ -89,8 +91,9 @@ export async function getEventById(req, res) {
 export async function updateEvent(req, res) {
   try {
     const { id } = req.params;
-    const { name, description, date, endDate, location, image, category, tags, visibility } = req.body;
+    const { name, description, date, endDate, location, category, tags, visibility } = req.body;
     const userId = req.user.userId;
+    const image = req.file ? `/uploads/${req.file.filename}` : req.body.image; // Keep old image if not replaced
 
     const event = await EventModel.findById(id);
     if (!event) return res.status(404).send({ error: "Event not found" });

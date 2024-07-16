@@ -115,7 +115,7 @@ const UserDashboard = () => {
                         <div className="text-2xl font-bold">{day}</div>
                       </div>
                       <div className="mr-10 hover:shadow-xl ">
-                        <img src={event.image} alt={event.name} className="w-20 h-20 object-cover" />
+                        <img src={`${import.meta.env.VITE_SERVER_DOMAIN}${event.image}`} alt={event.name} className="w-20 h-20 object-cover" />
                       </div>
                       <div>
                         <h2 className="text-xl font-semibold">{event.name}</h2>

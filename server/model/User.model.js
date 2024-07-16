@@ -20,7 +20,7 @@ export const UserSchema = new mongoose.Schema({
   lastName: { type: String },
   mobile: { type: Number },
   address: { type: String },
-  profile: { type: String },
+  image: { type: String },
 });
 
 //user here names the same as Users (pural done by Mongo)

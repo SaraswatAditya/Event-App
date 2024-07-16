@@ -27,6 +27,10 @@ app.use(
 app.use(morgan("tiny"));
 app.disable("x-powered-by"); // less hackers know about our stack
 
+// Serve static files from the uploads directory
+app.use('/uploads', express.static('uploads'));
+
+
 const port = process.env.PORT || 8080;
 
 // HTTP GET Request
